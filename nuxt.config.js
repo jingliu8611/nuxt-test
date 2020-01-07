@@ -1,3 +1,6 @@
+import {createClient} from './plugins/contentful';
+const contentfulClient = createClient();
+
 module.exports = {
   /*
   ** Headers of the page
@@ -48,6 +51,20 @@ module.exports = {
       'markdown-it-div',
       'markdown-it-attrs'
     ]
+  },
+  generate: {
+    routes: () => {
+      return Promise.all([
+        contentfulClient.getEntries()
+      ]).then((res) => {
+        return res[0].items.map((type) => {
+          return {
+            route: type.sys.contentType.sys.id,
+            payload: res[0].items
+          }
+        })
+      })
+    }
   }
 }
 
